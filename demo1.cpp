@@ -21,31 +21,64 @@ struct User {
 void inputUserData(User &u) {
     cout << "\n--- Enter User Health Details ---\n";
 
-    cout << "Age: ";
-    cin >> u.age;
+    do {
+        cout << "Age: ";
+        cin >> u.age;
+        if (u.age <= 0 || u.age > 120)
+            cout << "Invalid age! Please enter a value between 1 and 120.\n";
+    } while (u.age <= 0 || u.age > 120);
 
-    cout << "Gender (M/F): ";
-    cin >> u.gender;
+    do {
+        cout << "Gender (M/F): ";
+        cin >> u.gender;
+        if (u.gender != 'M' && u.gender != 'F' &&
+            u.gender != 'm' && u.gender != 'f')
+            cout << "Invalid gender! Enter M or F.\n";
+    } while (u.gender != 'M' && u.gender != 'F' &&
+             u.gender != 'm' && u.gender != 'f');
 
-    cout << "Height (in meters): ";
-    cin >> u.height;
+    do {
+        cout << "Height (in meters): ";
+        cin >> u.height;
+        if (u.height <= 0 || u.height > 2.5)
+            cout << "Invalid height! Enter a value between 0.5m and 2.5m.\n";
+    } while (u.height <= 0 || u.height > 2.5);
 
-    cout << "Weight (in kg): ";
-    cin >> u.weight;
+    do {
+        cout << "Weight (in kg): ";
+        cin >> u.weight;
+        if (u.weight <= 0 || u.weight > 500)
+            cout << "Invalid weight! Enter a realistic value.\n";
+    } while (u.weight <= 0 || u.weight > 500);
 
-    cout << "Sleep hours per day: ";
-    cin >> u.sleepHours;
+    do {
+        cout << "Sleep hours per day: ";
+        cin >> u.sleepHours;
+        if (u.sleepHours <= 0 || u.sleepHours > 24)
+            cout << "Invalid sleep hours! Enter a value between 1 and 24.\n";
+    } while (u.sleepHours <= 0 || u.sleepHours > 24);
 
-    cout << "Steps per day: ";
-    cin >> u.stepsPerDay;
+     do {
+        cout << "Steps per day: ";
+        cin >> u.stepsPerDay;
+        if (u.stepsPerDay < 0)
+            cout << "Invalid step count! Cannot be negative.\n";
+    } while (u.stepsPerDay < 0);
 
     cin.ignore(); // clears newline
 
     cout << "Any food allergy (type 'none' if no): ";
     getline(cin, u.allergy);
 
-    cout << "Goal (lose weight/gain weight/maintain): ";
-    getline(cin, u.goal);
+    do {
+        cout << "Goal (lose weight/gain weight/maintain): ";
+        getline(cin, u.goal);
+        if (u.goal != "lose weight" && u.goal != "gain weight" &&
+            u.goal != "maintain") {
+            cout << "Invalid goal! Enter 'lose weight', 'gain weight', or 'maintain'.\n";
+        }
+    } while (u.goal != "lose weight" && u.goal != "gain weight" &&
+             u.goal != "maintain");
 }
 
 // Function to display user data
@@ -91,10 +124,14 @@ float calculateDailyCalories(const User &u) {
     float bmr = calculateBMR(u);
     float activityFactor = 1.2; // default sedentary
 
-    if (u.stepsPerDay >= 8000)
-        activityFactor = 1.55;
+    if (u.stepsPerDay >= 12000)
+        activityFactor = 1.75;  // Very Active
+    else if (u.stepsPerDay >= 8000)
+        activityFactor = 1.55;  // Active
     else if (u.stepsPerDay >= 5000)
-        activityFactor = 1.375;
+        activityFactor = 1.375; // Moderately Active
+    else
+        activityFactor = 1.2;
 
     float calories = bmr * activityFactor;
 
@@ -104,6 +141,13 @@ float calculateDailyCalories(const User &u) {
         calories += 500;
 
     return calories;
+}
+
+string getActivityLevel(int steps) {
+    if (steps >= 12000) return "Very Active";
+    if (steps >= 8000) return "Active";
+    if (steps >= 5000) return "Moderately Active";
+    return "Sedentary";
 }
 
 //BMI Score
@@ -363,6 +407,7 @@ void displayCompleteHealthReport(const User &u) {
     // User health metrics
     cout << "BMI: " << bmi << endl;
     cout << "BMI Category: " << getBMICategory(bmi) << endl;
+    cout << "Activity Level: " << getActivityLevel(u.stepsPerDay) << endl;
     cout << "Estimated Daily Calories Needed: " << dailyCalories << " kcal\n";
 
     // Health Score + Status (Divide & Conquer)
